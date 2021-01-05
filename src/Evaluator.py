@@ -51,7 +51,7 @@ class Evaluator():
             plot(series, actions)
 
             stats.print_confusion_matrix()
-            print("Rewards in Episode: {} are: {}".format(i, np.sum(rewards)))
+            print("Rewards in Episode: {}\n are: {}".format(i, np.sum(rewards)))
         print("Maximum Reward: ", np.max(self.episodes_rewards),
               "\nAverage Reward: ", np.mean(self.episodes_rewards),
               "\n TestEpisodes: ", episodes)
