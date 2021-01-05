@@ -1,0 +1,8 @@
+name: AD-Env-Baselines
+channels:
+  - defaults
+dependencies:
+  - python=3.6
+  - tensorflow=1.15.0
+  - jupyter
+  - stable-baselines=2.10.1
