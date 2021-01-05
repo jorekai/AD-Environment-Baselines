@@ -1,6 +1,7 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from stable_baselines.common.base_class import BaseRLModel
+
+from resources.plots import plot
 
 
 class Evaluator():
@@ -44,20 +45,9 @@ class Evaluator():
             self.episodes_rewards.append(rewards)
             self.episodes_actions.append(actions)
             # plot the actions against its series
-            self.plot(series, actions)
+            plot(series, actions)
 
             print("Rewards in Episode: {} are: {}".format(i, np.sum(rewards)))
         print("Maximum Reward: ", np.max(self.episodes_rewards),
               "\nAverage Reward: ", np.mean(self.episodes_rewards),
               "\n TestEpisodes: ", self.episodes)
-
-    def plot(series, actions):
-        series = series
-        plt.figure(figsize=(10, 7))
-        plt.plot(series.index, actions, label="Actions", linestyle="solid")
-        plt.plot(series.index, series["anomaly"], label="True Label", linestyle="dotted")
-        for col in series.columns:
-            plt.plot(series.index, series[col], label=col, linestyle="dashed")
-        plt.legend()
-        plt.ylabel('Reward Sum')
-        plt.show()

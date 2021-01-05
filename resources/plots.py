@@ -1,6 +1,9 @@
+from typing import List
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sb
+from pandas import DataFrame
 
 import config
 
@@ -84,4 +87,15 @@ def plot_evaluation_series(series, actions):
     plt.plot(series.index, series["value"], label="Series", linestyle="dashed")
     plt.legend()
     plt.ylabel('Reward Sum')
+    plt.show()
+
+
+def plot(series: DataFrame, actions: List):
+    plt.figure(figsize=(12, 7))
+    plt.plot(series.index, actions, label="Actions", linestyle="solid")
+    for col in series.columns:
+        plt.plot(series.index, series[col], label=col, linestyle="dashed")
+    plt.legend()
+    plt.ylabel('Scaled Values + Action')
+    plt.xlabel("Series Index")
     plt.show()
