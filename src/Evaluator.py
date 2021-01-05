@@ -5,36 +5,33 @@ from resources.plots import plot
 
 
 class Evaluator():
-    def __init__(self,
-                 model: BaseRLModel,
-                 episodes: int) -> None:
-        # base setup
-        self.model = model
-        self.episodes = episodes
-        self.env = model.get_env()
-
+    def __init__(self) -> None:
         # init statistics
         self.episodes_rewards = []
         self.episodes_actions = []
 
-    def run(self):
+    def run(self, model: BaseRLModel,
+            episodes: int):
         """
-        Execute the evaluation of our model inside its environment.
+        Evaluate a model on its env for some time
+        :param model: trained BaseRLModel
+        :param episodes: n episodes
         :return:
         """
-        for i in range(self.episodes):
-            rewards = [0 for i in range(self.env.steps)]
-            actions = [0 for i in range(self.env.steps)]
+        env = model.get_env()
+        for i in range(episodes):
+            rewards = [0 for i in range(env.steps)]
+            actions = [0 for i in range(env.steps)]
             # get the first observation out of the environment
-            state = self.env.reset()
-            series = self.env.timeseries
+            state = env.reset()
+            series = env.timeseries
             # play through the env
-            while not self.env.done:
+            while not env.done:
                 # _states are only useful when using LSTM policies
-                action, _states = self.model.predict(state)
+                action, _states = model.predict(state)
                 # here, action, rewards and dones are arrays
                 # because we are using vectorized env
-                state, reward, done, _ = self.env.step(action)
+                state, reward, done, _ = env.step(action)
                 # print(obs, action, reward, done)
                 if type(action) is np.ndarray:
                     actions.append(int(action[0]))
@@ -50,4 +47,4 @@ class Evaluator():
             print("Rewards in Episode: {} are: {}".format(i, np.sum(rewards)))
         print("Maximum Reward: ", np.max(self.episodes_rewards),
               "\nAverage Reward: ", np.mean(self.episodes_rewards),
-              "\n TestEpisodes: ", self.episodes)
+              "\n TestEpisodes: ", episodes)

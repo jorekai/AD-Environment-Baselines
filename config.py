@@ -9,7 +9,7 @@ ACTION_SPACE = [LABELS["NORMAL"], LABELS["ANOMALY"]]
 # Storage
 STORAGE_PATH = "/storage/"
 FIGURE_PATH = "/storage/figures/"
-LOG_PATH = "/storage/logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+LOG_PATH = "/tensorboard/"
 MODEL_PATH = "/storage/models/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -46,4 +46,7 @@ STEPS = 25
 
 # Figures
 REWARDS_TRAINING = "rewards_" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".jpg"
+
+# NN
+HIDDEN_NEURONS = 64
 
