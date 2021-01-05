@@ -35,7 +35,7 @@ def get_frames_from_file_list(filelist: List[str], columns: Union[List[int], Non
     This method returns a List of DataFrames and eventually stores it as pickle file
     :param filelist: List(paths)
     :param columns: List(indices)
-    :param name: filename to be
+    :param name: filename to be, if None the dataframes will not be stored
     :param seperator: ; or ,
     :return:
     """
@@ -52,7 +52,7 @@ def get_frames_from_file_list(filelist: List[str], columns: Union[List[int], Non
         dataframes.append(series)
     if not columns:
         dataframes = fit_min_max_frames(dataframes)
-    if name:
+    if name is not None:
         store_object(dataframes, name)
     return dataframes
 
@@ -91,17 +91,13 @@ def init_dataframes(train_files: List[str], test_files: List[str]) -> Tuple[
             config.ROOT_DIR + config.STORAGE_PATH + config.TRAIN_SET_NAME):
         train_dataframes = get_frames_from_file_list(filelist=train_files,
                                                      name=config.TRAIN_SET_NAME,
-                                                     columns=None,
-                                                     complete=True,
-                                                     store=False)
+                                                     columns=None)
     else:
         train_dataframes = load_object(config.TRAIN_SET_NAME)
     if not os.path.exists(config.ROOT_DIR + config.STORAGE_PATH + config.TEST_SET_NAME):
         test_dataframes = get_frames_from_file_list(filelist=test_files,
                                                     name=config.TEST_SET_NAME,
-                                                    columns=None,
-                                                    complete=True,
-                                                    store=False)
+                                                    columns=None)
     else:
         test_dataframes = load_object(config.TEST_SET_NAME)
         # DEBUG
