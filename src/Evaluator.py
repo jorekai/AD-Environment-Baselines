@@ -62,6 +62,7 @@ class Stats():
     The Class Stats should be linked to every Timeseries.
     For each Timeseries we can then link statistics over FN, FP, TN, TP.
     Furthermore we can support the Stats for each Training Iteration and look at Trends and fitting performance
+    Maybe look at https://pypi.org/project/pycm/
     """
 
     def __init__(self, series: DataFrame) -> None:
