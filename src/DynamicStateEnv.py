@@ -57,7 +57,7 @@ class DynamicStateEnv(gym.Env):
         if verbose:
             self.__info()
 
-    def __state(self, previous_state: List = []) -> np.ndarray[List, List]:
+    def __state(self, previous_state: List = []) -> np.ndarray:
         """
         The State property of our environment is the concatenation of our previous states,action pairs and the current
         state,action pair.
@@ -101,7 +101,7 @@ class DynamicStateEnv(gym.Env):
             combined = np.array([state0, state1], dtype='float32')
             return combined
 
-    def __reward(self) -> List[int, int]:
+    def __reward(self) -> List[int]:
         """
         Returns a reward List because we want to choose our states by a binary choice of actions
         The Reward will contain two integers specified in the config

@@ -39,7 +39,7 @@ class Evaluator():
                     actions.append(int(action))
                 rewards.append(reward)
             # Append to all Statistics
-            self.episodes_rewards.append(rewards)
+            self.episodes_rewards.append(sum(rewards))
             self.episodes_actions.append(actions)
             # plot the actions against its series
             plot(series, actions)
@@ -48,3 +48,8 @@ class Evaluator():
         print("Maximum Reward: ", np.max(self.episodes_rewards),
               "\nAverage Reward: ", np.mean(self.episodes_rewards),
               "\n TestEpisodes: ", episodes)
+
+
+class Stats():
+    def __init__(self):
+        pass

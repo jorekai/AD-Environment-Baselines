@@ -46,6 +46,8 @@ class Simulator():
             log_name: str) -> None:
         self.train(timesteps=training_steps,
                    log_name=log_name)
+        self.eval(self.model,
+                  1)
 
     def train(self, timesteps: int,
               log_name: str):
@@ -56,3 +58,9 @@ class Simulator():
              episodes: int):
         self.evaluator.run(model=model,
                            episodes=episodes)
+
+
+if __name__ == '__main__':
+    sim = Simulator(environment=DynamicStateEnv(),
+                    evaluator=Evaluator())
+    sim.run(10000, "Test")
