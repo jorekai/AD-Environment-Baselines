@@ -141,7 +141,6 @@ class DynamicStateEnv(gym.Env):
             self.stats = self.train_stats[self.file_index]
             if self.verbose:
                 print("Current File: ", utils.get_filename_by_index(file_list=self.train_files, idx=self.file_index))
-                self.stats.print_confusion_matrix()
             self.stats.reset()
             self.stats = self.train_stats[self.file_index]
         else:

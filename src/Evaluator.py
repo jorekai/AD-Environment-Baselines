@@ -1,9 +1,9 @@
+import pprint
 from copy import deepcopy
 
 import numpy as np
 from pandas import DataFrame
 from stable_baselines.common.base_class import BaseRLModel
-import pprint
 
 from resources.plots import plot
 
@@ -104,6 +104,12 @@ class Stats():
         Call on Training Episode
         :return:
         """
+        self.confusion["TPR"] = round(self.true_positive_rate(), 3)
+        self.confusion["TNR"] = round(self.true_negative_rate(), 3)
+        self.confusion["PRECISION"] = round(self.precision(), 3)
+        self.confusion["ACCURACY"] = round(self.accuracy(), 3)
+        self.confusion["F_SCORE"] = round(self.f_one(), 3)
+        self.print_confusion_matrix()
         self.history.append(self.confusion)
         self.confusion = {
             "FN": 0,
@@ -112,4 +118,20 @@ class Stats():
             "TP": 0,
         }
 
+    def true_positive_rate(self):
+        return 0 if self.absolutes[1.0] == 0 else self.confusion["TP"] / self.absolutes[1.0]
 
+    def true_negative_rate(self):
+        return 0 if self.absolutes[0.0] == 0 else self.confusion["TN"] / self.absolutes[0.0]
+
+    def precision(self):
+        denominator = self.confusion["TP"] + self.confusion["FP"]
+        return 0 if denominator == 0 else self.confusion["TP"] / denominator
+
+    def accuracy(self):
+        denominator = self.absolutes[1.0] + self.absolutes[0.0]
+        return 0 if denominator == 0 else self.confusion["TP"] + self.confusion["TN"] / denominator
+
+    def f_one(self):
+        denominator = self.precision() + self.true_positive_rate()
+        return 0 if denominator == 0 else 2 * ((self.precision() * self.true_positive_rate()) / (denominator))
