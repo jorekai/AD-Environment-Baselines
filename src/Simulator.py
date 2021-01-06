@@ -47,7 +47,7 @@ class Simulator():
         self.train(timesteps=training_steps,
                    log_name=log_name)
         self.eval(self.model,
-                  1)
+                  2)
 
     def train(self, timesteps: int,
               log_name: str):

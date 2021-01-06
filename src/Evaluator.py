@@ -24,6 +24,7 @@ class Evaluator():
         :return:
         """
         env = model.get_env()
+        env.test = True
         for i in range(episodes):
             rewards = [0 for i in range(env.steps)]
             actions = [0 for i in range(env.steps)]
