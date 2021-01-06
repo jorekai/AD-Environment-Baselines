@@ -18,7 +18,7 @@ TRAIN_SET_NAME = "full_dataset_train"
 TRAIN_DIR = ROOT_DIR + "/datasets/train/"
 TEST_SET_NAME = "full_dataset_test"
 TEST_DIR = ROOT_DIR + "/datasets/test/"
-FIX_TRAIN_FILE = False
+FIX_TRAIN_FILE = True
 DATASETS_DIR = ROOT_DIR + "/datasets/"
 
 # Memory

@@ -30,14 +30,12 @@ class Evaluator():
             # get the first observation out of the environment
             state = env.reset()
             series = env.timeseries
-            stats = Stats(series=series)
+            stats = env.stats
             # play through the env
             while not env.done:
                 # _states are only useful when using LSTM policies
                 action, _states = model.predict(state)
                 state, reward, done, _ = env.step(action)
-                # notify Stats Object
-                stats.update(reward, action)
                 # verify action
                 if type(action) is np.ndarray:
                     actions.append(int(action[0]))
@@ -50,7 +48,7 @@ class Evaluator():
             # plot the actions against its series
             plot(series, actions)
 
-            stats.print_confusion_matrix()
+            stats.print_history()
             print("Rewards in Episode: {}\n are: {}".format(i, np.sum(rewards)))
         print("Maximum Reward: ", np.max(self.episodes_rewards),
               "\nAverage Reward: ", np.mean(self.episodes_rewards),
@@ -93,6 +91,13 @@ class Stats():
         pprint.pprint(self.absolutes, width=1)
         print("\nConfusion Matrix:")
         pprint.pprint(self.confusion, width=1)
+
+    def print_history(self):
+        print("History:\n")
+        print("\nAbsolute Occurrences:")
+        pprint.pprint(self.absolutes, width=1)
+        print("\nConfusion Matrix:")
+        pprint.pprint(self.history, width=1)
 
     def reset(self):
         """

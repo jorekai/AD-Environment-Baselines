@@ -6,7 +6,6 @@ import numpy as np
 
 import config
 from resources import utils, plots
-from src.Evaluator import Stats
 
 
 class DynamicStateEnv(gym.Env):
@@ -58,7 +57,6 @@ class DynamicStateEnv(gym.Env):
         self.verbose = verbose
         if verbose:
             self.train_stats = utils.init_stats(self.train_dataframes)
-            self.stats = self.train_stats[self.file_index]
             self.__info()
 
     def __state(self, previous_state: List = []) -> np.ndarray:
@@ -140,7 +138,9 @@ class DynamicStateEnv(gym.Env):
         # if we are training or testing we need to set different DataFrames
         if not self.test:
             self.timeseries = self.train_dataframes[self.file_index]
+            self.stats = self.train_stats[self.file_index]
             if self.verbose:
+                print("Current File: ", utils.get_filename_by_index(file_list=self.train_files, idx=self.file_index))
                 self.stats.print_confusion_matrix()
             self.stats.reset()
             self.stats = self.train_stats[self.file_index]
