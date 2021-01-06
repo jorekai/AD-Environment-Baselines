@@ -61,6 +61,6 @@ class Simulator():
 
 
 if __name__ == '__main__':
-    sim = Simulator(environment=DynamicStateEnv(),
+    sim = Simulator(environment=DynamicStateEnv(verbose=True),
                     evaluator=Evaluator())
     sim.run(25000, "Test")

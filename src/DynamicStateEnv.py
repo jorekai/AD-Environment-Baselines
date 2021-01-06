@@ -6,6 +6,7 @@ import numpy as np
 
 import config
 from resources import utils, plots
+from src.Evaluator import Stats
 
 
 class DynamicStateEnv(gym.Env):
@@ -54,7 +55,10 @@ class DynamicStateEnv(gym.Env):
         self.cursor_init = config.STEPS
 
         # DEBUG INFO
+        self.verbose = verbose
         if verbose:
+            self.train_stats = utils.init_stats(self.train_dataframes)
+            self.stats = self.train_stats[self.file_index]
             self.__info()
 
     def __state(self, previous_state: List = []) -> np.ndarray:
@@ -136,6 +140,10 @@ class DynamicStateEnv(gym.Env):
         # if we are training or testing we need to set different DataFrames
         if not self.test:
             self.timeseries = self.train_dataframes[self.file_index]
+            if self.verbose:
+                self.stats.print_confusion_matrix()
+            self.stats.reset()
+            self.stats = self.train_stats[self.file_index]
         else:
             self.timeseries = self.test_dataframes[self.file_index_test]
         # initialize cursor and goal flage
@@ -144,6 +152,7 @@ class DynamicStateEnv(gym.Env):
 
         # set init state and return init state
         self.states = self.__state()
+
         return self.states
 
     def step(self, action: int) -> Tuple[np.ndarray, float, bool, dict]:
@@ -174,6 +183,10 @@ class DynamicStateEnv(gym.Env):
             self.states = state[action]
         else:
             self.states = state
+
+        # on verbose log training stats
+        if self.verbose:
+            self.stats.update(reward[action], action)
 
         # return the Tuple of observation, reward, done, debug
         return state[action], float(reward[action]), self.done, {}

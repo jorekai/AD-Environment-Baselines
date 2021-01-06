@@ -10,6 +10,7 @@ import sklearn.preprocessing
 from pandas import DataFrame
 
 import config as config
+from src.Evaluator import Stats
 
 scaler = sklearn.preprocessing.MinMaxScaler()
 
@@ -182,3 +183,15 @@ def fit_min_max_frames(frames: List[DataFrame]) -> List[DataFrame]:
                 scaler.fit(np.array(frame[column]).reshape(-1, 1))
                 frame[column] = scaler.fit_transform(frame[[column]])
     return frames
+
+
+def init_stats(frames: List[DataFrame]) -> List[Stats]:
+    """
+    Creates a Statistics array with the same indices as the dataframe array
+    :param frames: List of Dataframes
+    :return: List of Stats Object
+    """
+    stats = []
+    for frame in frames:
+        stats.append(Stats(frame))
+    return stats

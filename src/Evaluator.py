@@ -76,6 +76,7 @@ class Stats():
             "TN": 0,
             "TP": 0,
         }
+        self.history = []
 
     def update(self, reward: int, action: int) -> None:
         if reward == -5 and action == 0:
@@ -92,5 +93,18 @@ class Stats():
         pprint.pprint(self.absolutes, width=1)
         print("\nConfusion Matrix:")
         pprint.pprint(self.confusion, width=1)
+
+    def reset(self):
+        """
+        Call on Training Episode
+        :return:
+        """
+        self.history.append(self.confusion)
+        self.confusion = {
+            "FN": 0,
+            "FP": 0,
+            "TN": 0,
+            "TP": 0,
+        }
 
 
