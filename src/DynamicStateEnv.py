@@ -206,13 +206,6 @@ class DynamicStateEnv(gym.Env):
         """
         return True if self.timeseries["anomaly"][self.cursor] == 1 else False
 
-    def __str__(self) -> str:
-        """
-        Get the current Filename if needed
-        :return: str
-        """
-        return utils.get_filename_by_index(self.train_files, self.file_index)
-
     def __info(self) -> None:
         """
         Get Information about the Current Environment

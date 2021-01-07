@@ -1,7 +1,7 @@
 from typing import List
 
 import matplotlib.pyplot as plt
-import pandas as pd
+import numpy as np
 import seaborn as sb
 from pandas import DataFrame
 
@@ -99,3 +99,24 @@ def plot(series: DataFrame, actions: List):
     plt.ylabel('Scaled Values + Action')
     plt.xlabel("Series Index")
     plt.show()
+
+
+def plot_confusion_matrix(stats, title='Hit vs. Miss Distribution', cmap=plt.cm.Blues):
+    cm = np.array([[stats["TP"], stats["TN"]], [stats["FP"], stats["FN"]]])
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(2)
+    plt.xticks(tick_marks, ['Anomaly', 'Normal'])
+    plt.yticks(tick_marks, ['Hit', 'Miss'])
+    plt.tight_layout()
+
+    width, height = cm.shape
+
+    for x in range(width):
+        for y in range(height):
+            plt.annotate(str(cm[x][y]), xy=(y, x),
+                         horizontalalignment='center',
+                         verticalalignment='center')
+    plt.ylabel('Predictions')
+    plt.xlabel('Timeseries Labels')
