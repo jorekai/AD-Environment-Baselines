@@ -13,7 +13,6 @@ class DynamicStateEnv(gym.Env):
     def __init__(self,
                  train_directory=config.TRAIN_DIR,
                  test_directory=config.TEST_DIR,
-                 fix_train_file=config.FIX_TRAIN_FILE,
                  verbose=config.VERBOSE):
         super(DynamicStateEnv, self).__init__()
         if verbose:
@@ -22,7 +21,7 @@ class DynamicStateEnv(gym.Env):
         # init dataframes
         self.__init_dataframes(train_directory, test_directory)
 
-        # gym interface
+        # gym interface and state attributes
         self.action_space = gym.spaces.Discrete(len(config.ACTION_SPACE))
         self.observation_space = gym.spaces.Box(low=0.0, high=1.0,
                                                 shape=(config.STEPS, self.train_dataframes[0].columns.size + 1),
@@ -32,22 +31,12 @@ class DynamicStateEnv(gym.Env):
         self.cursor_init = 0
         self.states = []
         self.done = False
-
-        # TRAINING
-        self.fix_train_file = fix_train_file
-        self.file_index = random.randint(0, len(self.train_files) - 1)
-        self.train_size = utils.get_sample_size_overall(self.train_dataframes)
-        self.train_range = len(self.train_dataframes)
-
-        # TESTING
-        self.file_index_test = random.randint(0, len(self.test_files) - 1)
-        self.test_range = len(self.test_dataframes)
-        self.test_size = utils.get_sample_size_overall(self.test_dataframes)
-        self.test = False
-
-        # INIT THE CURSOR
         self.steps = config.STEPS
         self.cursor_init = config.STEPS
+
+        # init training and testing attributes
+        self.__init_train_test_attributes()
+
 
         # DEBUG INFO
         self.verbose = verbose
@@ -255,6 +244,12 @@ class DynamicStateEnv(gym.Env):
                 plots.plot_series(frame, name)
 
     def __init_dataframes(self, train_dir: str, test_dir: str) -> None:
+        """
+        DatFrames are loaded via the directory path, training and testing environment differ in their states
+        :param train_dir: path
+        :param test_dir: path
+        :return: None
+        """
         self.train_directory = train_dir
         self.train_files = utils.get_file_list_from_directory(self.train_directory)
         self.test_directory = test_dir
@@ -262,6 +257,23 @@ class DynamicStateEnv(gym.Env):
 
         self.train_dataframes, self.test_dataframes = utils.init_dataframes(train_files=self.train_files,
                                                                             test_files=self.test_files)
+
+    def __init_train_test_attributes(self):
+        """
+        Attributes like training samples overall, length of the frames and the current index are set here
+        :return: None
+        """
+        # TRAINING
+        self.fix_train_file = config.FIX_TRAIN_FILE
+        self.file_index = random.randint(0, len(self.train_files) - 1)
+        self.train_size = utils.get_sample_size_overall(self.train_dataframes)
+        self.train_range = len(self.train_dataframes)
+
+        # TESTING
+        self.file_index_test = random.randint(0, len(self.test_files) - 1)
+        self.test_range = len(self.test_dataframes)
+        self.test_size = utils.get_sample_size_overall(self.test_dataframes)
+        self.test = False
 
     def render(self, mode='human'):
         """
