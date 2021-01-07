@@ -19,14 +19,10 @@ class DynamicStateEnv(gym.Env):
         if verbose:
             self.init_time = utils.start_timer()
 
-        self.train_directory = train_directory
-        self.train_files = utils.get_file_list_from_directory(self.train_directory)
-        self.test_directory = test_directory
-        self.test_files = utils.get_file_list_from_directory(self.test_directory)
+        # init dataframes
+        self.__init_dataframes(train_directory, test_directory)
 
-        self.train_dataframes, self.test_dataframes = utils.init_dataframes(train_files=self.train_files,
-                                                                            test_files=self.test_files)
-
+        # gym interface
         self.action_space = gym.spaces.Discrete(len(config.ACTION_SPACE))
         self.observation_space = gym.spaces.Box(low=0.0, high=1.0,
                                                 shape=(config.STEPS, self.train_dataframes[0].columns.size + 1),
@@ -257,6 +253,15 @@ class DynamicStateEnv(gym.Env):
                 frame = self.train_dataframes[idx]
                 name = utils.get_filename_by_index(self.train_files, idx)
                 plots.plot_series(frame, name)
+
+    def __init_dataframes(self, train_dir: str, test_dir: str) -> None:
+        self.train_directory = train_dir
+        self.train_files = utils.get_file_list_from_directory(self.train_directory)
+        self.test_directory = test_dir
+        self.test_files = utils.get_file_list_from_directory(self.test_directory)
+
+        self.train_dataframes, self.test_dataframes = utils.init_dataframes(train_files=self.train_files,
+                                                                            test_files=self.test_files)
 
     def render(self, mode='human'):
         """
