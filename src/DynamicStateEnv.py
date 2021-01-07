@@ -161,15 +161,12 @@ class DynamicStateEnv(gym.Env):
         self.update_cursor()
 
         # on verbose log training stats, training/testing difference
-        if self.verbose:
-            if not self.test:
-                self.train_stats.update(reward[action], action)
-                if self.done:
-                    self.train_stats.reset()
-            else:
-                self.test_stats.update(reward[action], action)
-                if self.done:
-                    self.test_stats.reset()
+        if self.verbose and not self.test:
+            self.train_stats.update(reward[action], action)
+            self.train_stats.reset() if self.done else None
+        else:
+            self.test_stats.update(reward[action], action)
+            self.test_stats.reset() if self.done else None
 
         # if we are done get the final state concatenation, else return the correct state
         if self.done:
