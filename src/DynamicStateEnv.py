@@ -118,22 +118,22 @@ class DynamicStateEnv(gym.Env):
         """
         # if we are training on one file just get the first file in our list, else set file index to 0
         if not self.fix_train_file:
-            self.file_index = (self.file_index + 1) % self.train_range
-            self.file_index_test = (self.file_index_test + 1) % self.test_range
+            self.file_index = self.__get_random_index(True)
+            self.file_index_test = self.__get_random_index(False)
         else:
             self.file_index = 0
             self.file_index_test = 0
-        # if we are training or testing we need to set different DataFrames
+        # if we are training or testing we need to set different DataFrames and Stats object accordingly
         if not self.test:
             self.timeseries = self.train_dataframes[self.file_index]
             self.train_stats = self.train_stats_files[self.file_index]
             if self.verbose:
-                print("Current File: ", utils.get_filename_by_index(file_list=self.train_files, idx=self.file_index))
+                self.__print_current_file(True)
         else:
             self.timeseries = self.test_dataframes[self.file_index_test]
             self.test_stats = self.test_stats_files[self.file_index_test]
             if self.verbose:
-                print("Current File: ", utils.get_filename_by_index(file_list=self.test_files, idx=self.file_index_test))
+                self.__print_current_file(False)
         # initialize cursor and goal flage
         self.cursor = self.cursor_init
         self.done = False
@@ -274,6 +274,25 @@ class DynamicStateEnv(gym.Env):
         self.test_range = len(self.test_dataframes)
         self.test_size = utils.get_sample_size_overall(self.test_dataframes)
         self.test = False
+
+    def __get_random_index(self, train: bool) -> int:
+        """
+        return a random index of our Files, Training or Testing
+        :param train: bool
+        :return: int index
+        """
+        return (self.file_index + 1) % self.train_range if train else (self.file_index_test + 1) % self.test_range
+
+    def __print_current_file(self, train: bool) -> None:
+        """
+        Print the Current Frame Name to console
+        :param train: bool
+        :return: None
+        """
+        if train:
+            print("Training on Frame: ", utils.get_filename_by_index(file_list=self.train_files, idx=self.file_index))
+        else:
+            print("Testing on Frame: ", utils.get_filename_by_index(file_list=self.test_files, idx=self.file_index_test))
 
     def render(self, mode='human'):
         """
