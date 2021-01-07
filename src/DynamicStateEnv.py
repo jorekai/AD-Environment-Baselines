@@ -56,7 +56,10 @@ class DynamicStateEnv(gym.Env):
         # DEBUG INFO
         self.verbose = verbose
         if verbose:
-            self.train_stats = utils.init_stats(self.train_dataframes)
+            self.train_stats_files = utils.init_stats(self.train_dataframes)
+            self.train_stats = None
+            self.test_stats_files = utils.init_stats(self.test_dataframes)
+            self.test_stats = None
             self.__info()
 
     def __state(self, previous_state: List = []) -> np.ndarray:
@@ -138,13 +141,14 @@ class DynamicStateEnv(gym.Env):
         # if we are training or testing we need to set different DataFrames
         if not self.test:
             self.timeseries = self.train_dataframes[self.file_index]
-            self.stats = self.train_stats[self.file_index]
+            self.train_stats = self.train_stats_files[self.file_index]
             if self.verbose:
                 print("Current File: ", utils.get_filename_by_index(file_list=self.train_files, idx=self.file_index))
-            self.stats.reset()
-            self.stats = self.train_stats[self.file_index]
         else:
             self.timeseries = self.test_dataframes[self.file_index_test]
+            self.test_stats = self.test_stats_files[self.file_index_test]
+            if self.verbose:
+                print("Current File: ", utils.get_filename_by_index(file_list=self.test_files, idx=self.file_index_test))
         # initialize cursor and goal flage
         self.cursor = self.cursor_init
         self.done = False
@@ -171,6 +175,17 @@ class DynamicStateEnv(gym.Env):
         # update the cursor because we are making a step in the environment
         self.update_cursor()
 
+        # on verbose log training stats, training/testing difference
+        if self.verbose:
+            if not self.test:
+                self.train_stats.update(reward[action], action)
+                if self.done:
+                    self.train_stats.reset()
+            else:
+                self.test_stats.update(reward[action], action)
+                if self.done:
+                    self.test_stats.reset()
+
         # if we are done get the final state concatenation, else return the correct state
         if self.done:
             state = np.array([self.states, self.states])
@@ -182,10 +197,6 @@ class DynamicStateEnv(gym.Env):
             self.states = state[action]
         else:
             self.states = state
-
-        # on verbose log training stats
-        if self.verbose:
-            self.stats.update(reward[action], action)
 
         # return the Tuple of observation, reward, done, debug
         return state[action], float(reward[action]), self.done, {}

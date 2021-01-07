@@ -23,6 +23,7 @@ class Evaluator():
         :param episodes: n episodes
         :return:
         """
+        print("\n\tEVALUATION\n")
         env = model.get_env()
         env.test = True
         for i in range(episodes):
@@ -31,7 +32,7 @@ class Evaluator():
             # get the first observation out of the environment
             state = env.reset()
             series = env.timeseries
-            stats = env.stats
+            test_stats = env.test_stats
             # play through the env
             while not env.done:
                 # _states are only useful when using LSTM policies
@@ -49,7 +50,6 @@ class Evaluator():
             # plot the actions against its series
             plot(series, actions)
 
-            stats.print_history()
             print("Rewards in Episode: {}\n are: {}".format(i, np.sum(rewards)))
         print("Maximum Reward: ", np.max(self.episodes_rewards),
               "\nAverage Reward: ", np.mean(self.episodes_rewards),
@@ -94,10 +94,9 @@ class Stats():
         pprint.pprint(self.confusion, width=1)
 
     def print_history(self):
-        print("History:\n")
         print("\nAbsolute Occurrences:")
         pprint.pprint(self.absolutes, width=1)
-        print("\nConfusion Matrix:")
+        print("History:\n")
         pprint.pprint(self.history, width=1)
 
     def reset(self):
