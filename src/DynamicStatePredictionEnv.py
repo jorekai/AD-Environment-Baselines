@@ -8,13 +8,13 @@ import config
 from resources import utils, plots
 
 
-class DynamicStateEnv(gym.Env):
+class DynamicStatePredictionEnv(gym.Env):
 
     def __init__(self,
                  train_directory=config.TRAIN_DIR,
                  test_directory=config.TEST_DIR,
                  verbose=config.VERBOSE):
-        super(DynamicStateEnv, self).__init__()
+        super(DynamicStatePredictionEnv, self).__init__()
         if verbose:
             self.init_time = utils.start_timer()
 
@@ -24,7 +24,7 @@ class DynamicStateEnv(gym.Env):
         # gym interface and state attributes
         self.action_space = gym.spaces.Discrete(len(config.ACTION_SPACE))
         self.observation_space = gym.spaces.Box(low=0.0, high=1.0,
-                                                shape=(config.STEPS, self.train_dataframes[0].columns.size),
+                                                shape=(config.STEPS, self.train_dataframes[0].columns.size + 1),
                                                 dtype=np.float32)
         self.timeseries = []
         self.cursor = -1
@@ -36,7 +36,6 @@ class DynamicStateEnv(gym.Env):
 
         # init training and testing attributes
         self.__init_train_test_attributes()
-
 
         # DEBUG INFO
         self.verbose = verbose
@@ -67,7 +66,7 @@ class DynamicStateEnv(gym.Env):
                 statecols0.append(0)
                 # append to our binary state
                 state.append(statecols0)
-
+            print(statecols0)
             # do the equivalent for the other action in the action space
             state.pop(0)
             statecols1 = [self.timeseries[column][i] for column in self.timeseries]
@@ -81,10 +80,8 @@ class DynamicStateEnv(gym.Env):
         if self.cursor > self.steps:
             # get the binary state representation
             cols0 = [self.timeseries[column][self.cursor] for column in self.timeseries]
-            cols0.pop()
             cols0.append(0)
             cols1 = [self.timeseries[column][self.cursor] for column in self.timeseries]
-            cols1.pop()
             cols1.append(1)
             # drop the oldest feature of n_steps and append our current features
             state0 = np.concatenate((previous_state[1:self.steps],
@@ -102,15 +99,20 @@ class DynamicStateEnv(gym.Env):
         :return: List(int, int)
         """
         # if we are at the init position of our horizon then set our binary rewards according to the env
-        if self.cursor >= self.steps:
-
+        if self.steps <= self.cursor < len(self.timeseries) - self.steps:
+            # if in between 5 or 25 steps anomalous sample
+            for i in range(25, self.steps):
+                if self.timeseries["anomaly"][self.cursor + i] == 0:
+                    return [config.REWARDS["TN"], config.REWARDS["FP"]]
+                if self.timeseries["anomaly"][self.cursor + i] == 1:
+                    return [config.REWARDS["FN"], config.REWARDS["TP"]]
             # if the label at the horizon is 0 e.g. a normal value
-            if self.timeseries['anomaly'][self.cursor] == 0:
-                return [config.REWARDS["TN"], config.REWARDS["FP"]]
-
-            # if the label at the horizon is 0 e.g. an anomalous value
-            if self.timeseries['anomaly'][self.cursor] == 1:
-                return [config.REWARDS["FN"], config.REWARDS["TP"]]
+            # if self.timeseries['anomaly'][self.cursor] == 0:
+            #     return [config.REWARDS["TN"], config.REWARDS["FP"]]
+            #
+            # # if the label at the horizon is 0 e.g. an anomalous value
+            # if self.timeseries['anomaly'][self.cursor] == 1:
+            #     return [config.REWARDS["FN"], config.REWARDS["TP"]]
         # return a binary [0, 0] if we are not at the init step yet
         else:
             return [0, 0]
@@ -286,7 +288,8 @@ class DynamicStateEnv(gym.Env):
         if train:
             print("Training on Frame: ", utils.get_filename_by_index(file_list=self.train_files, idx=self.file_index))
         else:
-            print("Testing on Frame: ", utils.get_filename_by_index(file_list=self.test_files, idx=self.file_index_test))
+            print("Testing on Frame: ",
+                  utils.get_filename_by_index(file_list=self.test_files, idx=self.file_index_test))
 
     def render(self, mode='human'):
         """

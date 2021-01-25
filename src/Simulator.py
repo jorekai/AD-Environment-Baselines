@@ -3,6 +3,7 @@ from stable_baselines.common import BaseRLModel
 
 import config
 from src.DynamicStateEnv import DynamicStateEnv
+from src.DynamicStatePredictionEnv import DynamicStatePredictionEnv
 from src.Evaluator import Evaluator
 from src.PolicyNetwork import CustomPolicy
 
@@ -47,7 +48,7 @@ class Simulator():
         self.train(timesteps=training_steps,
                    log_name=log_name)
         self.eval(self.model,
-                  1)
+                  2)
 
     def train(self, timesteps: int,
               log_name: str):
