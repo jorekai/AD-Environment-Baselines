@@ -45,7 +45,7 @@ def get_frames_from_file_list(filelist: List[str], columns: Union[List[int], Non
     for i in range(len(filelist)):
         if not columns:
             series = pd.read_csv(filelist[i], header=0, sep=seperator)
-            series = series.drop(series.columns[0], axis=1)
+            # series = series.drop(series.columns[0], axis=1)
         else:
             series = pd.read_csv(filelist[i], usecols=columns, header=0, names=['value', 'anomaly'], sep=seperator)
             scaler.fit(np.array(series['value']).reshape(-1, 1))
