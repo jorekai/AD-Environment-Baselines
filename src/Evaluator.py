@@ -56,7 +56,7 @@ class Evaluator():
               "\n TestEpisodes: ", episodes)
 
 
-class Stats():
+class Stats:
     """
     The Class Stats should be linked to every Timeseries.
     For each Timeseries we can then link statistics over FN, FP, TN, TP.
@@ -104,11 +104,12 @@ class Stats():
         Call on Training Episode
         :return:
         """
-        self.confusion["TPR"] = round(self.true_positive_rate(), 3)
-        self.confusion["TNR"] = round(self.true_negative_rate(), 3)
+        self.confusion["TPR_recall"] = round(self.true_positive_rate(), 3)
+        self.confusion["TNR_selectivity"] = round(self.true_negative_rate(), 3)
         self.confusion["PRECISION"] = round(self.precision(), 3)
-        self.confusion["ACCURACY"] = round(self.accuracy(), 3)
+        self.confusion["ACC"] = round(self.accuracy(), 3)
         self.confusion["F_SCORE"] = round(self.f_one(), 3)
+        self.confusion["BALANCED_ACC"] = round(self.balanced_accuracy(), 3)
         self.print_confusion_matrix()
         self.history.append(self.confusion)
         self.confusion = {
@@ -130,8 +131,11 @@ class Stats():
 
     def accuracy(self):
         denominator = self.absolutes[1.0] + self.absolutes[0.0]
-        return 0 if denominator == 0 else self.confusion["TP"] + self.confusion["TN"] / denominator
+        return 0 if denominator == 0 else (self.confusion["TP"] + self.confusion["TN"]) / denominator
 
     def f_one(self):
         denominator = self.precision() + self.true_positive_rate()
         return 0 if denominator == 0 else 2 * ((self.precision() * self.true_positive_rate()) / (denominator))
+
+    def balanced_accuracy(self):
+        return (self.true_positive_rate() + self.true_negative_rate()) / 2
