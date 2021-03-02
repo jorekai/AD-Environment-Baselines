@@ -37,7 +37,6 @@ class DynamicStateEnv(gym.Env):
         # init training and testing attributes
         self.__init_train_test_attributes()
 
-
         # DEBUG INFO
         self.verbose = verbose
         if verbose:
@@ -132,12 +131,12 @@ class DynamicStateEnv(gym.Env):
             self.timeseries = self.train_dataframes[self.file_index]
             self.train_stats = self.train_stats_files[self.file_index]
             if self.verbose:
-                self.__print_current_file(True)
+                self.print_current_file(True)
         else:
             self.timeseries = self.test_dataframes[self.file_index_test]
             self.test_stats = self.test_stats_files[self.file_index_test]
             if self.verbose:
-                self.__print_current_file(False)
+                self.print_current_file(False)
         # initialize cursor and goal flage
         self.cursor = self.cursor_init
         self.done = False
@@ -250,7 +249,8 @@ class DynamicStateEnv(gym.Env):
         self.test_files = utils.get_file_list_from_directory(self.test_directory)
 
         self.train_dataframes, self.test_dataframes = utils.init_dataframes(train_files=self.train_files,
-                                                                            test_files=self.test_files)
+                                                                            test_files=self.test_files,
+                                                                            columns=["x", "y", "z", "anomaly"])
 
     def __init_train_test_attributes(self):
         """
@@ -277,16 +277,21 @@ class DynamicStateEnv(gym.Env):
         """
         return (self.file_index + 1) % self.train_range if train else (self.file_index_test + 1) % self.test_range
 
-    def __print_current_file(self, train: bool) -> None:
+    def print_current_file(self, train: bool) -> None:
         """
         Print the Current Frame Name to console
         :param train: bool
         :return: None
         """
         if train:
-            print("Training on Frame: ", utils.get_filename_by_index(file_list=self.train_files, idx=self.file_index))
+            fname = utils.get_filename_by_index(file_list=self.train_files, idx=self.file_index)
+            print("Training on Frame: ", fname)
+            return fname
         else:
-            print("Testing on Frame: ", utils.get_filename_by_index(file_list=self.test_files, idx=self.file_index_test))
+            fname = utils.get_filename_by_index(file_list=self.test_files, idx=self.file_index_test)
+            print("Testing on Frame: ",
+                  utils.get_filename_by_index(file_list=self.test_files, idx=self.file_index_test))
+            return fname
 
     def render(self, mode='human'):
         """

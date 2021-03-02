@@ -42,11 +42,11 @@ EPSILON_DECAY = 0.9
 BATCH_SIZE = 256  # something between 128 and 512
 TIMESTEPS = 0
 UPDATE_STEPS = 10
-STEPS = 25
+STEPS = 250
 
 # Figures
 REWARDS_TRAINING = "rewards_" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".jpg"
 
 # NN
-HIDDEN_NEURONS = 64
+HIDDEN_NEURONS = 256
 

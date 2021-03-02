@@ -90,14 +90,17 @@ def plot_evaluation_series(series, actions):
     plt.show()
 
 
-def plot(series: DataFrame, actions: List):
+def plot(series: DataFrame, actions: List, name: str, logpath=config.ROOT_DIR + config.LOG_PATH):
     plt.figure(figsize=(12, 7))
     plt.plot(series.index, actions, label="Actions", linestyle="solid")
     for col in series.columns:
-        plt.plot(series.index, series[col], label=col, linestyle="dashed")
+        if len(col) < 14:
+            plt.plot(series.index, series[col], label=col, linestyle="dashed")
     plt.legend()
     plt.ylabel('Scaled Values + Action')
     plt.xlabel("Series Index")
+    name = name.rsplit('/', 1)[-1].split(".")[0].capitalize()
+    plt.savefig(fname=logpath + f"{name}.jpg", dpi=400, format='jpg')
     plt.show()
 
 

@@ -45,12 +45,15 @@ def get_frames_from_file_list(filelist: List[str], columns: Union[List[int], Non
     for i in range(len(filelist)):
         if not columns:
             series = pd.read_csv(filelist[i], header=0, sep=seperator)
+            # comment this line to get first dataset column as feature
             series = series.drop(series.columns[0], axis=1)
         else:
-            series = pd.read_csv(filelist[i], usecols=columns, header=0, names=['value', 'anomaly'], sep=seperator)
-            scaler.fit(np.array(series['value']).reshape(-1, 1))
-            series['value'] = scaler.fit_transform(series[["value"]])
+            # series = pd.read_csv(filelist[i], usecols=columns, header=0, names=['value', 'anomaly'], sep=seperator)
+            # scaler.fit(np.array(series['value']).reshape(-1, 1))
+            # series['value'] = scaler.fit_transform(series[["value"]])
+            series = pd.read_csv(filelist[i], usecols=columns, header=0, sep=seperator)
         dataframes.append(series)
+    dataframes = fit_min_max_frames(dataframes)
     if not columns:
         dataframes = fit_min_max_frames(dataframes)
     if name is not None:
@@ -79,7 +82,7 @@ def get_bivariate_from_file_list(filelist: List[str], columns: List[int], name: 
     return dataframes
 
 
-def init_dataframes(train_files: List[str], test_files: List[str]) -> Tuple[
+def init_dataframes(train_files: List[str], test_files: List[str], columns: List[int] = None) -> Tuple[
     List[DataFrame], List[DataFrame]]:
     """
     The initialization returns a Tuple of Lists of pandas Dataframes
@@ -92,13 +95,13 @@ def init_dataframes(train_files: List[str], test_files: List[str]) -> Tuple[
             config.ROOT_DIR + config.STORAGE_PATH + config.TRAIN_SET_NAME):
         train_dataframes = get_frames_from_file_list(filelist=train_files,
                                                      name=config.TRAIN_SET_NAME,
-                                                     columns=None)
+                                                     columns=columns)
     else:
         train_dataframes = load_object(config.TRAIN_SET_NAME)
     if not os.path.exists(config.ROOT_DIR + config.STORAGE_PATH + config.TEST_SET_NAME):
         test_dataframes = get_frames_from_file_list(filelist=test_files,
                                                     name=config.TEST_SET_NAME,
-                                                    columns=None)
+                                                    columns=columns)
     else:
         test_dataframes = load_object(config.TEST_SET_NAME)
         # DEBUG

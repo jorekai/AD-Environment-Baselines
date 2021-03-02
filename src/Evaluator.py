@@ -9,11 +9,12 @@ from resources.plots import plot
 
 
 class Evaluator():
-    def __init__(self) -> None:
+    def __init__(self, logname: str) -> None:
         # init statistics
         self.episodes_rewards = []
         self.episodes_actions = []
         self.episodes_stats = []
+        self.logname = logname
 
     def run(self, model: BaseRLModel,
             episodes: int):
@@ -32,6 +33,7 @@ class Evaluator():
             # get the first observation out of the environment
             state = env.reset()
             series = env.timeseries
+            series_name = env.print_current_file(False)
             test_stats = env.test_stats
             # play through the env
             while not env.done:
@@ -48,7 +50,7 @@ class Evaluator():
             self.episodes_rewards.append(sum(rewards))
             self.episodes_actions.append(actions)
             # plot the actions against its series
-            plot(series, actions)
+            plot(series, actions, self.logname + series_name)
 
             print("Rewards in Episode: {}\n are: {}".format(i, np.sum(rewards)))
         print("Maximum Reward: ", np.max(self.episodes_rewards),
